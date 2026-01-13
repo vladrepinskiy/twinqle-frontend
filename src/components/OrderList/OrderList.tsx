@@ -8,6 +8,7 @@ interface OrderListProps {
   isLoading: boolean;
   selectedOrderId: string | null;
   onSelectOrder: (orderId: string | null) => void;
+  onCreateOrder: () => void;
 }
 
 export const OrderList = ({
@@ -15,6 +16,7 @@ export const OrderList = ({
   isLoading,
   selectedOrderId,
   onSelectOrder,
+  onCreateOrder,
 }: OrderListProps) => {
   // Handle keyboard navigation through the list
   useEffect(() => {
@@ -58,6 +60,10 @@ export const OrderList = ({
           <Title>Orders</Title>
           <Count>Loading...</Count>
         </Header>
+        <CreateButton onClick={onCreateOrder}>
+          <PlusIcon>+</PlusIcon>
+          Create Order
+        </CreateButton>
         <LoadingContainer>
           <Spinner />
         </LoadingContainer>
@@ -71,6 +77,10 @@ export const OrderList = ({
         <Title>Orders</Title>
         <Count>{orders.length}</Count>
       </Header>
+      <CreateButton onClick={onCreateOrder}>
+        <PlusIcon>+</PlusIcon>
+        Create Order
+      </CreateButton>
       <Content>
         {orders.length === 0 ? (
           <EmptyContainer>
@@ -126,6 +136,36 @@ const Count = styled("span")`
   font-size: 0.75rem;
   font-weight: 600;
   color: #6b7280;
+`;
+
+const CreateButton = styled("button")`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem 1rem 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  background: #3b82f6;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #2563eb;
+  }
+
+  &:active {
+    background: #1d4ed8;
+  }
+`;
+
+const PlusIcon = styled("span")`
+  font-size: 1.25rem;
+  line-height: 1;
 `;
 
 const Content = styled("div")`

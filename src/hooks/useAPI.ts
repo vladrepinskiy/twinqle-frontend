@@ -4,7 +4,7 @@ import type { CreateOrderRequest, Order } from "../types/order";
 export const useAPI = () => {
   const API_BASE_URL = env.apiBaseUrl;
 
-  const fetchOrders = async (): Promise<Order[]> => {
+  const callFetchOrders = async (): Promise<Order[]> => {
     const response = await fetch(`${API_BASE_URL}/orders`);
 
     if (!response.ok) {
@@ -14,7 +14,7 @@ export const useAPI = () => {
     return response.json();
   };
 
-  const getOrder = async (id: string): Promise<Order> => {
+  const callGetOrder = async (id: string): Promise<Order> => {
     const response = await fetch(`${API_BASE_URL}/orders/${id}`);
 
     if (!response.ok) {
@@ -27,7 +27,7 @@ export const useAPI = () => {
     return response.json();
   };
 
-  const createOrder = async (data: CreateOrderRequest): Promise<Order> => {
+  const callCreateOrder = async (data: CreateOrderRequest): Promise<Order> => {
     const response = await fetch(`${API_BASE_URL}/orders`, {
       method: "POST",
       headers: {
@@ -44,7 +44,7 @@ export const useAPI = () => {
     return response.json();
   };
 
-  const markOrderAsRead = async (id: string): Promise<Order> => {
+  const callMarkOrderAsRead = async (id: string): Promise<Order> => {
     const response = await fetch(`${API_BASE_URL}/orders/${id}/mark-read`, {
       method: "PATCH",
     });
@@ -60,9 +60,9 @@ export const useAPI = () => {
   };
 
   return {
-    fetchOrders,
-    getOrder,
-    createOrder,
-    markOrderAsRead,
+    callFetchOrders,
+    callGetOrder,
+    callCreateOrder,
+    callMarkOrderAsRead,
   };
 };

@@ -15,9 +15,4 @@ export interface Order {
 
 export interface CreateOrderRequest {
   merchant_reference: string;
-  carrier: string;
-  barcode: string;
-  status: OrderStatus;
-  carrier_shipment_id?: string;
-  label_pdf_base64?: string;
 }

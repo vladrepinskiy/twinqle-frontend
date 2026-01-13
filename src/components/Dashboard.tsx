@@ -1,6 +1,7 @@
 import { styled } from "goober";
 import { useEffect, useState } from "react";
 import { useOrders } from "../providers/orders.provider";
+import { CreateOrderModal } from "./CreateOrderModal";
 import { OrderDetailsEmpty } from "./OrderDetails/OrderDetailsEmpty";
 import { OrderDetails } from "./OrderDetails/OrderDetails";
 import { OrderList } from "./OrderList/OrderList";
@@ -8,6 +9,7 @@ import { OrderList } from "./OrderList/OrderList";
 export const Dashboard = () => {
   const { orders, isLoading, error, markOrderAsRead } = useOrders();
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const selectedOrder = orders.find((order) => order.id === selectedOrderId);
 
@@ -20,6 +22,10 @@ export const Dashboard = () => {
         markOrderAsRead(orderId);
       }
     }
+  };
+
+  const handleCreateOrder = () => {
+    setIsCreateModalOpen(true);
   };
 
   useEffect(() => {
@@ -44,21 +50,29 @@ export const Dashboard = () => {
   }
 
   return (
-    <Container>
-      <OrderList
-        orders={orders}
-        isLoading={isLoading}
-        selectedOrderId={selectedOrderId}
-        onSelectOrder={handleSelectOrder}
+    <>
+      <Container>
+        <OrderList
+          orders={orders}
+          isLoading={isLoading}
+          selectedOrderId={selectedOrderId}
+          onSelectOrder={handleSelectOrder}
+          onCreateOrder={handleCreateOrder}
+        />
+        <Panel>
+          {selectedOrder ? (
+            <OrderDetails order={selectedOrder} />
+          ) : (
+            <OrderDetailsEmpty />
+          )}
+        </Panel>
+      </Container>
+
+      <CreateOrderModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
       />
-      <Panel>
-        {selectedOrder ? (
-          <OrderDetails order={selectedOrder} />
-        ) : (
-          <OrderDetailsEmpty />
-        )}
-      </Panel>
-    </Container>
+    </>
   );
 };
 

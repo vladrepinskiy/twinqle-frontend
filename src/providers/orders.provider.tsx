@@ -9,7 +9,7 @@ import {
 import { toast } from "sonner";
 import { env } from "../config/env";
 import { useAPI } from "../hooks/useAPI";
-import type { Order } from "../types/order";
+import type { CreateOrderRequest, Order } from "../types/order";
 
 interface OrdersContextValue {
   orders: Order[];
@@ -17,6 +17,7 @@ interface OrdersContextValue {
   error: Error | null;
   refetch: () => void;
   markOrderAsRead: (orderId: string) => Promise<void>;
+  createOrder: (order: CreateOrderRequest) => Promise<void>;
 }
 
 const OrdersContext = createContext<OrdersContextValue | undefined>(undefined);
@@ -26,7 +27,7 @@ interface OrdersProviderProps {
 }
 
 export const OrdersProvider = ({ children }: OrdersProviderProps) => {
-  const { fetchOrders, markOrderAsRead: markOrderAsReadAPI } = useAPI();
+  const { callFetchOrders, callMarkOrderAsRead, callCreateOrder } = useAPI();
   const previousOrdersRef = useRef<Order[]>([]);
 
   const {
@@ -36,7 +37,7 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
     refetch,
   } = useQuery({
     queryKey: ["orders"],
-    queryFn: fetchOrders,
+    queryFn: callFetchOrders,
     refetchInterval: env.ordersPollingInterval,
     refetchIntervalInBackground: true,
   });
@@ -56,10 +57,27 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
 
   const markOrderAsRead = async (orderId: string) => {
     try {
-      await markOrderAsReadAPI(orderId);
+      await callMarkOrderAsRead(orderId);
       refetch();
     } catch (error) {
       console.error("Failed to mark order as read:", error);
+    }
+  };
+
+  const createOrder = async (data: CreateOrderRequest) => {
+    try {
+      await callCreateOrder(data);
+      refetch();
+      toast.success("Order created successfully", {
+        description: `Order ${data.merchant_reference} has been created`,
+      });
+    } catch (error) {
+      console.error("Failed to create order:", error);
+      toast.error("Failed to create order", {
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+      });
+      throw error;
     }
   };
 
@@ -69,6 +87,7 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
     error: error as Error | null,
     refetch,
     markOrderAsRead,
+    createOrder,
   };
 
   return (
