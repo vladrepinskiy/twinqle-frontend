@@ -9,6 +9,8 @@ A modern shipping order management dashboard for viewing and managing shipments.
 - **Wouter** - Lightweight routing
 - **Sonner** - Toast notifications
 
+Main motivation - keping the dashboard least bloated, without any overengineering since we are already relying on tanstack query
+
 ## Features
 
 - View and search orders
