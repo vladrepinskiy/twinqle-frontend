@@ -3,7 +3,7 @@ import type { Order } from "../../types/order";
 import { OrderDetailsHeader } from "./OrderDetailsHeader";
 import { OrderDetailsShipmentInfo } from "./OrderDetailsShipmentInfo";
 import { OrderDetailsTimeline } from "./OrderDetailsTimeline";
-import { OrderDetailsLabel } from "./OrderDetailsLabel";
+import { OrderDetailsDocuments } from "./OrderDetailsDocuments";
 
 interface OrderDetailsProps {
   order: Order;
@@ -15,7 +15,7 @@ export const OrderDetails = ({ order }: OrderDetailsProps) => {
       <OrderDetailsHeader order={order} />
       <OrderDetailsShipmentInfo order={order} />
       <OrderDetailsTimeline order={order} />
-      <OrderDetailsLabel order={order} />
+      <OrderDetailsDocuments order={order} />
     </Container>
   );
 };
