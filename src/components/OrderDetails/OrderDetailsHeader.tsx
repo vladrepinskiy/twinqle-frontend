@@ -11,8 +11,8 @@ export const OrderDetailsHeader = ({ order }: OrderDetailsHeaderProps) => {
     <Header>
       <HeaderContent>
         <Title>{order.merchant_reference}</Title>
-        <StatusBadge $status={order.status}>
-          {formatStatus(order.status)}
+        <StatusBadge $status={order.shipment_status}>
+          {formatStatus(order.shipment_status as any)}
         </StatusBadge>
       </HeaderContent>
       {order.has_updates && <UpdateBadge>New Updates</UpdateBadge>}
@@ -49,7 +49,11 @@ const StatusBadge = styled("span")<{ $status: string }>`
   font-size: 0.875rem;
   font-weight: 600;
   background: ${(props) => {
-    if (props.$status === "creating_shipment" || props.$status === "confirming")
+    if (
+      props.$status === "pending_creation" ||
+      props.$status === "creating_shipment" ||
+      props.$status === "confirming"
+    )
       return "#fef3c7";
     if (
       props.$status === "created" ||
@@ -63,7 +67,11 @@ const StatusBadge = styled("span")<{ $status: string }>`
     return "#f3f4f6";
   }};
   color: ${(props) => {
-    if (props.$status === "creating_shipment" || props.$status === "confirming")
+    if (
+      props.$status === "pending_creation" ||
+      props.$status === "creating_shipment" ||
+      props.$status === "confirming"
+    )
       return "#92400e";
     if (
       props.$status === "created" ||

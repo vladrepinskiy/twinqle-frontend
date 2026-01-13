@@ -22,7 +22,17 @@ export const OrderListCard = ({
       <CardBody>
         <Row>
           <Label>Status</Label>
-          <Status $status={order.status}>{formatStatus(order.status)}</Status>
+          <Status $status={order.shipment_status}>
+            {formatStatus(order.shipment_status as any)}
+          </Status>
+        </Row>
+        <Row>
+          <Label>Recipient</Label>
+          <Value>{order.recipient_name}</Value>
+        </Row>
+        <Row>
+          <Label>City</Label>
+          <Value>{order.recipient_city}</Value>
         </Row>
       </CardBody>
     </Card>
@@ -91,13 +101,27 @@ const Label = styled("span")`
   color: #6b7280;
 `;
 
+const Value = styled("span")`
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
 const Status = styled("span")<{ $status: string }>`
   padding: 0.125rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.75rem;
   font-weight: 600;
   background: ${(props) => {
-    if (props.$status === "creating_shipment" || props.$status === "confirming")
+    if (
+      props.$status === "pending_creation" ||
+      props.$status === "creating_shipment" ||
+      props.$status === "confirming"
+    )
       return "#fef3c7";
     if (
       props.$status === "created" ||
@@ -111,7 +135,11 @@ const Status = styled("span")<{ $status: string }>`
     return "#f3f4f6";
   }};
   color: ${(props) => {
-    if (props.$status === "creating_shipment" || props.$status === "confirming")
+    if (
+      props.$status === "pending_creation" ||
+      props.$status === "creating_shipment" ||
+      props.$status === "confirming"
+    )
       return "#92400e";
     if (
       props.$status === "created" ||
