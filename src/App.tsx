@@ -1,5 +1,14 @@
-function App() {
-  return <p>hello boss</p>;
-}
+import { Toaster } from "sonner";
+import { OrdersProvider } from "./providers/orders.provider";
+import { Dashboard } from "./components/Dashboard";
 
-export default App;
+export const App = () => {
+  return (
+    <>
+      <Toaster />
+      <OrdersProvider>
+        <Dashboard />
+      </OrdersProvider>
+    </>
+  );
+};
