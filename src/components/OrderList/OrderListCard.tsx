@@ -1,6 +1,7 @@
 import { styled } from "goober";
 import type { Order } from "../../types/order";
 import { formatStatus } from "../../utils/format.util";
+import { formatStatusReason } from "../../utils/order.util";
 
 interface OrderListCardProps {
   order: Order;
@@ -26,6 +27,11 @@ export const OrderListCard = ({
             {formatStatus(order.shipment_status as any)}
           </Status>
         </Row>
+        {order.shipment_status === "failed" && order.shipment_status_reason && (
+          <FailureReason>
+            {formatStatusReason(order.shipment_status_reason)}
+          </FailureReason>
+        )}
         <Row>
           <Label>Recipient</Label>
           <Value>{order.recipient_name}</Value>
@@ -106,6 +112,16 @@ const Value = styled("span")`
   font-weight: 500;
   color: #1a1a1a;
   text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const FailureReason = styled("p")`
+  margin: 0;
+  font-size: 0.6875rem;
+  color: #991b1b;
+  font-style: italic;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

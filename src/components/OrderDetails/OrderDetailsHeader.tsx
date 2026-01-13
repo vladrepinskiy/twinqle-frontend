@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useOrders } from "../../providers/orders.provider";
 import type { Order } from "../../types/order";
 import { formatStatus } from "../../utils/format.util";
-import { isRetryable } from "../../utils/order.util";
+import { isRetryable, formatStatusReason } from "../../utils/order.util";
 
 interface OrderDetailsHeaderProps {
   order: Order;
@@ -38,6 +38,11 @@ export const OrderDetailsHeader = ({ order }: OrderDetailsHeaderProps) => {
             </RetryButton>
           )}
         </StatusRow>
+        {order.shipment_status === "failed" && order.shipment_status_reason && (
+          <StatusReason>
+            {formatStatusReason(order.shipment_status_reason)}
+          </StatusReason>
+        )}
       </HeaderContent>
       {order.has_updates && <UpdateBadge>New Updates</UpdateBadge>}
     </Header>
@@ -128,6 +133,13 @@ const StatusRow = styled("div")`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+`;
+
+const StatusReason = styled("p")`
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #991b1b;
+  font-style: italic;
 `;
 
 const RetryButton = styled("button")`
