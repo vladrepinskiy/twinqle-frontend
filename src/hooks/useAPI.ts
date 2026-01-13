@@ -59,10 +59,26 @@ export const useAPI = () => {
     return response.json();
   };
 
+  const callRetryShipment = async (
+    id: string
+  ): Promise<{ message: string; orderId: string }> => {
+    const response = await fetch(`${API_BASE_URL}/orders/${id}/retry`, {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to retry shipment");
+    }
+
+    return response.json();
+  };
+
   return {
     callFetchOrders,
     callGetOrder,
     callCreateOrder,
     callMarkOrderAsRead,
+    callRetryShipment,
   };
 };

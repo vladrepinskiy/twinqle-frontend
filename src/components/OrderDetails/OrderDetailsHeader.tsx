@@ -1,19 +1,43 @@
 import { styled } from "goober";
+import { useState } from "react";
+import { useOrders } from "../../providers/orders.provider";
 import type { Order } from "../../types/order";
 import { formatStatus } from "../../utils/format.util";
+import { isRetryable } from "../../utils/order.util";
 
 interface OrderDetailsHeaderProps {
   order: Order;
 }
 
 export const OrderDetailsHeader = ({ order }: OrderDetailsHeaderProps) => {
+  const { retryShipment } = useOrders();
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    try {
+      await retryShipment(order.id);
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
+  const showRetryButton = isRetryable(order);
+
   return (
     <Header>
       <HeaderContent>
         <Title>{order.merchant_reference}</Title>
-        <StatusBadge $status={order.shipment_status}>
-          {formatStatus(order.shipment_status as any)}
-        </StatusBadge>
+        <StatusRow>
+          <StatusBadge $status={order.shipment_status}>
+            {formatStatus(order.shipment_status as any)}
+          </StatusBadge>
+          {showRetryButton && (
+            <RetryButton onClick={handleRetry} disabled={isRetrying}>
+              {isRetrying ? "Retrying..." : "Retry Shipment"}
+            </RetryButton>
+          )}
+        </StatusRow>
       </HeaderContent>
       {order.has_updates && <UpdateBadge>New Updates</UpdateBadge>}
     </Header>
@@ -51,6 +75,7 @@ const StatusBadge = styled("span")<{ $status: string }>`
   background: ${(props) => {
     if (
       props.$status === "pending_creation" ||
+      props.$status === "creation_in_flight" ||
       props.$status === "creating_shipment" ||
       props.$status === "confirming"
     )
@@ -69,6 +94,7 @@ const StatusBadge = styled("span")<{ $status: string }>`
   color: ${(props) => {
     if (
       props.$status === "pending_creation" ||
+      props.$status === "creation_in_flight" ||
       props.$status === "creating_shipment" ||
       props.$status === "confirming"
     )
@@ -96,4 +122,32 @@ const UpdateBadge = styled("span")`
   color: #1e40af;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+`;
+
+const StatusRow = styled("div")`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const RetryButton = styled("button")`
+  padding: 0.375rem 0.75rem;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #991b1b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #fecaca;
+    border-color: #fca5a5;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `;

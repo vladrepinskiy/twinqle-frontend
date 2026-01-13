@@ -1,11 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { toast } from "sonner";
 import { env } from "../config/env";
 import { useAPI } from "../hooks/useAPI";
@@ -18,6 +12,7 @@ interface OrdersContextValue {
   refetch: () => void;
   markOrderAsRead: (orderId: string) => Promise<void>;
   createOrder: (order: CreateOrderRequest) => Promise<void>;
+  retryShipment: (orderId: string) => Promise<void>;
 }
 
 const OrdersContext = createContext<OrdersContextValue | undefined>(undefined);
@@ -27,8 +22,12 @@ interface OrdersProviderProps {
 }
 
 export const OrdersProvider = ({ children }: OrdersProviderProps) => {
-  const { callFetchOrders, callMarkOrderAsRead, callCreateOrder } = useAPI();
-  const previousOrdersRef = useRef<Order[]>([]);
+  const {
+    callFetchOrders,
+    callMarkOrderAsRead,
+    callCreateOrder,
+    callRetryShipment,
+  } = useAPI();
 
   const {
     data: orders = [],
@@ -41,19 +40,6 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
     refetchInterval: env.ordersPollingInterval,
     refetchIntervalInBackground: true,
   });
-
-  useEffect(() => {
-    const hasChanged =
-      JSON.stringify(previousOrdersRef.current) !== JSON.stringify(orders);
-
-    if (hasChanged && previousOrdersRef.current.length > 0) {
-      toast.info("Orders updated", {
-        description: `${orders.length} order${orders.length !== 1 ? "s" : ""} in the system`,
-      });
-    }
-
-    previousOrdersRef.current = orders;
-  }, [orders]);
 
   const markOrderAsRead = async (orderId: string) => {
     try {
@@ -81,6 +67,23 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
     }
   };
 
+  const retryShipment = async (orderId: string) => {
+    try {
+      await callRetryShipment(orderId);
+      refetch();
+      toast.success("Shipment retry initiated", {
+        description: "The shipment creation will be retried",
+      });
+    } catch (error) {
+      console.error("Failed to retry shipment:", error);
+      toast.error("Failed to retry shipment", {
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+      });
+      throw error;
+    }
+  };
+
   const value: OrdersContextValue = {
     orders,
     isLoading,
@@ -88,6 +91,7 @@ export const OrdersProvider = ({ children }: OrdersProviderProps) => {
     refetch,
     markOrderAsRead,
     createOrder,
+    retryShipment,
   };
 
   return (

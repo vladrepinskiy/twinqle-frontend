@@ -2,6 +2,7 @@ import type { ValueOf } from "../utils/types.util";
 
 export const ORDER_STATUSES = {
   PENDING_CREATION: "pending_creation",
+  CREATION_IN_FLIGHT: "creation_in_flight",
   CREATING_SHIPMENT: "creating_shipment",
   CREATION_UNKNOWN: "creation_unknown",
   CREATED: "created",

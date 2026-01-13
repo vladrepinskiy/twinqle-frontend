@@ -119,6 +119,7 @@ const Status = styled("span")<{ $status: string }>`
   background: ${(props) => {
     if (
       props.$status === "pending_creation" ||
+      props.$status === "creation_in_flight" ||
       props.$status === "creating_shipment" ||
       props.$status === "confirming"
     )
@@ -137,6 +138,7 @@ const Status = styled("span")<{ $status: string }>`
   color: ${(props) => {
     if (
       props.$status === "pending_creation" ||
+      props.$status === "creation_in_flight" ||
       props.$status === "creating_shipment" ||
       props.$status === "confirming"
     )
