@@ -18,6 +18,7 @@ export interface Order {
   shipment_status: string;
   shipment_status_reason: string | null;
   label_pdf_base64: string | null;
+  signature_png_base64: string | null;
   label_fetched_at: string | null;
   has_updates: boolean;
   created_at: string;
